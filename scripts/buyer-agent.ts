@@ -11,7 +11,7 @@ import { GoogleGenAI } from "@google/genai";
  */
 
 const API_BASE_URL = process.env.APP_URL || 'http://localhost:3000';
-const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY || '');
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 async function simulateBuyerAgent() {
   console.log('🤖 Google Nexus Agent starting...');
@@ -25,14 +25,17 @@ async function simulateBuyerAgent() {
     console.log(`✅ Found ${services.length} services.`);
 
     // 2. Intelligent Selection using Gemini
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `You are an autonomous procurement agent. Your mission is to find an AI service that can help with "Smart Contract Security". 
     Available services: ${JSON.stringify(services)}. 
-    Return ONLY the exact JSON object of the service you choose.`;
+    Return ONLY the exact JSON object of the service you choose. Do not include markdown formatting.`;
 
     console.log('🧠 Asking Gemini to select service...');
-    const result = await model.generateContent(prompt);
-    const selectionText = result.response.text();
+    const result = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt
+    });
+    
+    const selectionText = result.text || '{}';
     const targetService = JSON.parse(selectionText.replace(/```json|```/g, ''));
 
     console.log(`🎯 Selection: "${targetService.name}" for ${targetService.price} USDC`);
