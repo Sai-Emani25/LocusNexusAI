@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Service": {
+      "title": "Agent Service",
+      "description": "Metadata for an available AI agent service",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number", "description": "Price in USDC" },
+        "endpoint": { "type": "string", "description": "Agent endpoint" },
+        "category": { "type": "string", "enum": ["Analysis", "Generation", "Coding", "Logistics"] }
+      },
+      "required": ["id", "name", "price", "endpoint"]
+    },
+    "Settlement": {
+      "title": "On-chain Settlement",
+      "description": "Log of a successful USDC payment via Locus",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "amount": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "txHash": { "type": "string" },
+        "buyerAgent": { "type": "string" }
+      },
+      "required": ["sessionId", "serviceId", "amount", "timestamp"]
+    }
+  },
+  "firestore": {
+    "services": {
+      "schema": { "$ref": "#/entities/Service" },
+      "description": "Registry of available agent services"
+    },
+    "settlements": {
+      "schema": { "$ref": "#/entities/Settlement" },
+      "description": "History of autonomous payments"
+    }
+  }
+}
